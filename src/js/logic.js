@@ -12,28 +12,41 @@ export default class Logic {
   }
 
   hidePopover(e) {
-    // Скрываем только если клик не по кнопке и не по popover
-    if (e.target !== this.gui.button && !this.gui.popover.contains(e.target)) {
-      this.gui.popover.classList.add("hidden");
+    if (e.target !== this.gui.button && !this.gui.popover.contains(e.target) && !this.gui.popover.classList.contains("hidden")) {
+      popover.classList.remove("show");
+      popover.classList.add("hiding");
     }
-  }
+    }
+
 
   togglePopover(e) {
     e.preventDefault();
     e.stopPropagation();
-
     const position = e.target.getBoundingClientRect();
-    const width = e.target.offsetWidth;
+    const popover = this.gui.popover;
 
-    if (this.gui.popover.classList.contains("hidden")) {
-      // Показываем popover
-      this.gui.popover.classList.remove("hidden");
-      this.gui.popoverTitle.innerHTML = "Button";
-      this.gui.popover.style.left = `${(position.left + width / 2 - 250 / 2).toFixed()}px`;
-      this.gui.popover.style.top = `${(position.top - this.gui.popover.offsetHeight - 5).toFixed()}px`;
+    if (popover.classList.contains("hidden")) {
+      popover.classList.remove("hidden");
+
+      popover.style.position = 'absolute';
+      popover.style.top = `${position.bottom + window.scrollY}px`;
+      popover.style.left = `${position.left + window.scrollX}px`;
+      popover.style.marginTop = '5px';
+
+      popover.classList.remove("hiding");
+      requestAnimationFrame(()=> {
+        requestAnimationFrame(()=> {
+          popover.classList.add("show");
+        });
+      });
+      
     } else {
-      // Скрываем popover
-      this.gui.popover.classList.add("hidden");
+      popover.classList.remove('show');
+      popover.classList.add("hiding");
+      setTimeout(()=> {
+        popover.classList.add("hidden");
+        popover.classList.remove("hiding");
+      }, 300)
     }
   }
 }
